@@ -1,13 +1,13 @@
+import React, { useContext, useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import styled from 'styled-components';
 import Center from '@/components/Center';
 import Button from '@/components/Button';
-import { useContext, useEffect, useState } from 'react';
 import { CartContext } from '@/components/CartContext';
 import axios from 'axios';
 import Table from '@/components/Table';
 import Input from '@/components/Input';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 const ColumnsWrapper = styled.div`
@@ -70,17 +70,14 @@ const CityHolder = styled.div`
 
 const NavLink = styled(Link)`
   display: block;
-  
   padding: 10px 0;
   @media screen and (min-width: 768px) {
     padding: 0;
   }
 `;
 
-
 const AuthLink = styled(NavLink)`
   cursor: pointer;
-  
 `;
 
 export default function CartPage() {
@@ -127,17 +124,37 @@ export default function CartPage() {
   }
 
   async function goToPayment() {
-    const response = await axios.post('/api/checkout', {
-      name,
-      email,
-      city,
-      postalCode,
-      streetAddress,
-      country,
-      cartProducts,
-    });
-    if (response.data.url) {
-      window.location = response.data.url;
+    try {
+      // Send order details to your API and clear the cart
+      await axios.post('/api/checkout', {
+        name,
+        email,
+        city,
+        postalCode,
+        streetAddress,
+        country,
+        cartProducts,
+      });
+      
+      // Clear the cart after sending the order
+      clearCart();
+      
+      // Redirect to Stripe checkout
+      const response = await axios.post('/api/checkout', {
+        name,
+        email,
+        city,
+        postalCode,
+        streetAddress,
+        country,
+        cartProducts,
+      });
+      
+      if (response.data.url) {
+        window.location = response.data.url;
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error);
     }
   }
 
@@ -155,7 +172,7 @@ export default function CartPage() {
           <ColumnsWrapper>
             <Box>
               <h1>Thanks for your order!</h1>
-              <p>We will email you when your order will be sent.</p>
+              <p>We will email you when your order is sent.</p>
             </Box>
           </ColumnsWrapper>
         </Center>
@@ -213,7 +230,11 @@ export default function CartPage() {
                   <tr>
                     <td></td>
                     <td></td>
-                    <td>${total}</td>
+                    <td>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 320 512">
+                       <path d="M308 96c6.6 0 12-5.4 12-12V44c0-6.6-5.4-12-12-12H12C5.4 32 0 37.4 0 44v44.7c0 6.6 5.4 12 12 12h85.3c27.3 0 48.3 10 61 27.3H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h158.8c-6.2 36.1-33 58.6-74.8 58.6H12c-6.6 0-12 5.4-12 12v53c0 3.3 1.4 6.5 3.9 8.8l165.1 152.4a12 12 0 0 0 8.1 3.2h82.6c10.9 0 16.2-13.4 8.1-20.8L116.9 319.9c76.5-2.3 131.1-53.4 138.3-127.9H308c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12h-58.7c-3.5-11.5-8.3-22.2-14.3-32H308z" />
+                        </svg>
+                        {total}</td>
                   </tr>
                 </tbody>
               </Table>

@@ -1,11 +1,11 @@
-import {mongooseConnect} from "@/lib/mongoose";
+import { mongooseConnect } from "@/lib/mongoose";
+import { buffer } from 'micro';
+import { Order } from "@/models/Order";
 const stripe = require('stripe')(process.env.STRIPE_SK);
-import {buffer} from 'micro';
-import {Order} from "@/models/Order";
 
 const endpointSecret = "whsec_634d3142fd2755bd61adaef74ce0504bd2044848c8aac301ffdb56339a0ca78d";
 
-export default async function handler(req,res) {
+export default async function handler(req, res) {
   await mongooseConnect();
   const sig = req.headers['stripe-signature'];
 
@@ -24,10 +24,10 @@ export default async function handler(req,res) {
       const data = event.data.object;
       const orderId = data.metadata.orderId;
       const paid = data.payment_status === 'paid';
-      if (orderId && paid) {
-        await Order.findByIdAndUpdate(orderId,{
-          paid:true,
-        })
+      if (orderId) {
+        await Order.findByIdAndUpdate(orderId, {
+          paid: paid,
+        });
       }
       break;
     default:
@@ -38,8 +38,5 @@ export default async function handler(req,res) {
 }
 
 export const config = {
-  api: {bodyParser:false,}
+  api: { bodyParser: false },
 };
-
-// bright-thrift-cajole-lean
-// acct_1Lj5ADIUXXMmgk2a
