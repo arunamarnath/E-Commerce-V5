@@ -60,7 +60,7 @@ if (!session) {
 
         <ColumnsWrapper>
         <WhiteBox></WhiteBox>
-        <WhiteBox></WhiteBox>
+        
         </ColumnsWrapper>
     
    
