@@ -8,6 +8,7 @@ import axios from 'axios';
 import Table from '@/components/Table';
 import Input from '@/components/Input';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const ColumnsWrapper = styled.div`
   display: grid;
@@ -65,6 +66,21 @@ const QuantityLabel = styled.span`
 const CityHolder = styled.div`
   display: flex;
   gap: 5px;
+`;
+
+const NavLink = styled(Link)`
+  display: block;
+  
+  padding: 10px 0;
+  @media screen and (min-width: 768px) {
+    padding: 0;
+  }
+`;
+
+
+const AuthLink = styled(NavLink)`
+  cursor: pointer;
+  
 `;
 
 export default function CartPage() {
@@ -152,7 +168,7 @@ export default function CartPage() {
       <>
         <Header />
         <Center>
-          <h2>Please sign in to view your cart.</h2>
+          <h2>Please sign in to view your cart.<AuthLink href={""} onClick={() => signIn()}>SignIn</AuthLink></h2>
         </Center>
       </>
     );

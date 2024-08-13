@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Center from '@/components/Center';
 import WhiteBox from '@/components/WhiteBox';
 import { useSession } from 'next-auth/react';
+import {  signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 
 
@@ -20,13 +22,28 @@ const { data: session } = useSession();
   margin-top: 40px;
  
 `;
+const NavLink = styled(Link)`
+  display: block;
+  
+  padding: 10px 0;
+  @media screen and (min-width: 768px) {
+    padding: 0;
+  }
+`;
+
+
+const AuthLink = styled(NavLink)`
+  cursor: pointer;
+  
+`;
 
 if (!session) {
     return (
       <>
         <Header />
         <Center>
-          <h2>Please sign in to view your Account</h2>
+          <h2>Please sign in to view your Account  <AuthLink href={""} onClick={() => signIn()}>SignIn</AuthLink></h2>
+          
         </Center>
       </>
     );
