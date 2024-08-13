@@ -82,7 +82,7 @@ export default function Header() {
           <StyledNav mobileNavActive={mobileNavActive}>
             <NavLink href={'/'}>Home</NavLink>
             <NavLink href={'/products'}>All products</NavLink>
-            <NavLink href={'/categories'}>Categories</NavLink>
+            {/* <NavLink href={'/categories'}>Categories</NavLink> */}
             {session && <NavLink href={'/account'}>Account</NavLink>}
             <NavLink href={'/cart'}>Cart ({session ? cartProducts.length : 0})</NavLink>
             {session ? (
