@@ -55,12 +55,8 @@ if (!session) {
     <Header/>
   
     <Center>
-
-
-
         <ColumnsWrapper>
         <WhiteBox></WhiteBox>
-        
         </ColumnsWrapper>
     
    
