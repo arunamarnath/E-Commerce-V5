@@ -1,25 +1,42 @@
 import NextAuth from 'next-auth';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import clientPromise from '@/lib/mongodb';
 import GoogleProvider from 'next-auth/providers/google';
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
     }),
   ],
-  adapter: MongoDBAdapter(clientPromise),
   callbacks: {
-    async session({ session, user }) {
-      if (user) {
-        session.user.id = user.id; // Add user ID to session
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user = {
+          id: token.id, // Ensure user.id is included
+          name: token.name,
+          email: token.email,
+          image: token.picture,
+        };
+        session.accessToken = token.accessToken; // Include accessToken in session
       }
       return session;
     },
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        token.id = profile.sub; // Profile ID is used as user ID
+        token.email = profile.email;
+        token.name = profile.name;
+        token.picture = profile.picture;
+        token.accessToken = account.access_token;
+        console.log("acc",account);
+        console.log("pro",profile);
+
+
+      }
+      return token;
+    },
   },
-  session: {
-    strategy: 'jwt',
-  },
-});
+  secret: process.env.NEXTAUTH_SECRET,  // Ensure this is set in your environment
+};
+
+export default NextAuth(authOptions);
